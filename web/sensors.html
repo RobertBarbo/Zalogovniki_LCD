@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="sl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07131e">
+  <link rel="icon" href="data:,">
+  <title>Senzorji · Zalogovniki</title>
+  <style>
+    :root { color-scheme:dark; --text:#edf5fc; --muted:#91a7b9; --line:#8fc3e41c; --cyan:#66d5f4; --green:#67dfb9; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:radial-gradient(ellipse at 25% 0,#12324d,transparent 65%) #07111b; color:var(--text); font:14px/1.5 Inter,"Segoe UI",Arial,sans-serif; min-height:100vh; }
+    button,textarea { font:inherit; }
+    button,a { -webkit-tap-highlight-color:transparent; }
+    button { cursor:pointer; }
+    button:disabled { cursor:not-allowed; opacity:.45; }
+    button:focus-visible,a:focus-visible,textarea:focus-visible { outline:2px solid var(--cyan); outline-offset:4px; }
+    .shell { max-width:1120px; padding:0 32px; margin:auto; }
+    header { min-height:88px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .brand { display:flex; align-items:center; gap:11px; color:var(--text); text-decoration:none; font-size:18px; font-weight:650; letter-spacing:-.4px; }
+    .brand svg { width:37px; height:40px; color:#70e0ff; padding:8px; border:1px solid #2586a8; border-radius:11px; background:#123047; }
+    .brand small { display:block; color:var(--muted); font-size:8px; font-weight:400; text-transform:uppercase; letter-spacing:1.7px; margin-top:3px; }
+    .button { display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid #2a4051; border-radius:9px; padding:10px 13px; background:#142333; color:var(--text); text-decoration:none; font-size:12px; font-weight:550; min-height:39px; }
+    .button:hover { background:#1b3246; border-color:#3f7794; }
+    .button svg { width:16px; height:16px; }
+    svg { fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+    main { padding:34px 0 24px; }
+    .eyebrow { color:var(--cyan); letter-spacing:2px; font-size:10px; text-transform:uppercase; font-weight:600; margin-bottom:8px; }
+    h1 { margin:0 0 9px; font-size:29px; font-weight:600; letter-spacing:-.8px; }
+    .intro { color:var(--muted); margin:0; max-width:700px; font-size:13px; }
+    .notice { margin:23px 0; border:1px solid #286281; border-radius:11px; padding:15px 17px; color:#a4cfe6; background:#10324a66; font-size:12px; line-height:1.7; }
+    .notice strong { color:#dceffa; font-weight:600; }
+    .summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .stat { padding:17px 19px; border:1px solid var(--line); border-radius:12px; background:#0c1c2b; }
+    .stat span { display:block; color:var(--muted); font-size:11px; margin-bottom:6px; }
+    .stat strong { font-size:21px; font-weight:550; font-variant-numeric:tabular-nums; letter-spacing:-.5px; }
+    .stat .time { font-size:18px; }
+    .toolbar { display:flex; align-items:center; justify-content:space-between; gap:14px; margin:25px 0 16px; }
+    .status { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--green); }
+    .status::before { content:""; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
+    .status[data-state=error] { color:#ff9a98; }
+    .status[data-state=waiting] { color:#b3c2ce; }
+    .actions { display:flex; gap:8px; flex-shrink:0; }
+    #copy-feedback { margin:0 0 15px; font-size:12px; color:#b4ddef; min-height:18px; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }
+    .card { min-width:0; padding:20px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(135deg,#102333,#0b1825); }
+    .card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    h2 { font-size:16px; font-weight:600; margin:0; }
+    .position { color:var(--muted); font-size:11px; margin:4px 0 19px; }
+    .index { color:#a7c8dc; border:1px solid #29495f; border-radius:5px; padding:3px 6px; font:10px/1.4 Consolas,monospace; white-space:nowrap; }
+    .rom-label { font-size:9px; letter-spacing:1.3px; text-transform:uppercase; color:#789bb4; margin-bottom:7px; }
+    .rom { display:block; font:13px/1.6 "Cascadia Code",Consolas,monospace; color:#a4e6ff; white-space:nowrap; letter-spacing:-.15px; }
+    .reading { margin-top:17px; padding-top:17px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .value { font-size:25px; font-weight:550; font-variant-numeric:tabular-nums; letter-spacing:-.6px; white-space:nowrap; }
+    .value small { color:#8ba5b8; font-size:12px; font-weight:400; margin-left:3px; }
+    .reading-state { color:var(--green); font-size:10px; text-align:right; }
+    .card[data-valid=false] .reading-state { color:#ffb58b; }
+    .is-stale .value { opacity:.45; }
+    .section-note { margin:18px 0 0; color:#7394aa; font-size:11px; line-height:1.8; }
+    #count-notice { color:#e7c78d; font-size:12px; margin:14px 0; }
+    #export-text { width:100%; min-height:170px; padding:12px; color:#d2e7f4; background:#081822; border:1px solid #31526a; border-radius:8px; font:12px/1.8 Consolas,monospace; margin-bottom:15px; }
+    .empty { color:var(--muted); padding:35px 15px; text-align:center; border:1px dashed #2a4051; border-radius:12px; }
+    footer { border-top:1px solid var(--line); padding:18px 0 23px; display:flex; justify-content:space-between; gap:12px; font-size:10px; color:#64879e; }
+    @media(max-width:900px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:560px) { .shell { padding:0 17px; } header { min-height:78px; } .brand { font-size:16px; gap:9px; } .brand small { font-size:7px; letter-spacing:1.2px; } .back-label { display:none; } .summary { gap:8px; } .stat { padding:12px 10px; } .stat span { min-height:32px; font-size:10px; } .stat strong { font-size:19px; } .stat .time { font-size:14px; } main { padding-top:25px; } h1 { font-size:26px; } .toolbar { flex-direction:column; align-items:stretch; gap:13px; } .actions .button { flex:1; } .grid { grid-template-columns:1fr; gap:12px; } .card { padding:19px; } .rom { font-size:15px; } footer { flex-direction:column; gap:5px; } }
+    @media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C9.5 7.5 5 11.5 5 16a7 7 0 0 0 14 0c0-4.5-4.5-8.5-7-13Z"/><path d="M8.5 16a3.5 3.5 0 0 0 3.5 3.5"/></svg><span>Zalogovniki<small>Centrometal · Senzorji</small></span></a>
+      <a class="button" href="/" aria-label="Nazaj na pregled zalogovnikov"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg><span class="back-label">Pregled zalogovnikov</span></a>
+    </header>
+    <main>
+      <div class="eyebrow">Dallas · OneWire</div>
+      <h1>Serijski naslovi senzorjev</h1>
+      <p class="intro">Stalne dodelitve in temperature šestih merilnih mest. Podatki se osvežujejo vsakih 5 sekund.</p>
+      <div class="notice"><strong>Dodelitev po stalnih serijskih naslovih.</strong> Položaji so nastavljeni po potrjenem seznamu. Vrstni red zaznavanja na vodilu ne vpliva na dodelitev; manjkajočega senzorja ne nadomesti drug senzor.</div>
+      <div class="summary">
+        <div class="stat"><span>1-Wire naprave ob zagonu</span><strong id="device-count">—</strong></div>
+        <div class="stat"><span>Dodeljeni serijski naslovi</span><strong id="address-count">— / 6</strong></div>
+        <div class="stat"><span>Zadnja meritev</span><strong class="time" id="last-sample">—</strong></div>
+      </div>
+      <div class="toolbar"><div class="status" id="status" data-state="waiting" role="status" aria-live="polite">Čakam na podatke naprave …</div><div class="actions"><button class="button" id="refresh">Osveži podatke</button><button class="button" id="copy-all" disabled>Kopiraj seznam</button></div></div>
+      <p id="copy-feedback" role="status" aria-live="polite"></p>
+      <textarea id="export-text" readonly hidden aria-label="Seznam senzorjev za ročno kopiranje"></textarea>
+      <p id="count-notice" hidden></p>
+      <div class="grid" id="sensor-grid"><div class="empty" id="empty-state">Berem serijske naslove …</div></div>
+      <p class="section-note">ROM je celoten 64-bitni naslov, vključno z družinsko kodo in CRC, zapisan v vrstnem redu Dallas/OneWire. Indeks ob zagonu je samo diagnostičen podatek in se začne z 0; za branje temperature se vedno uporabi dodeljeni ROM naslov.</p>
+      <p class="section-note">Ob napaki senzorja njegov dodeljeni ROM ostane prikazan, temperatura pa je označena kot manjkajoča. Stran prikazuje šest dodeljenih mest; odpiranje strani ne sproži dodatnih meritev ali spremembe nastavitev.</p>
+    </main>
+    <footer><span>Centrometal · Zalogovniki LCD</span><span>Firmware <span id="firmware-version">—</span> · Bralni pregled senzorjev</span></footer>
+  </div>
+  <template id="sensor-template">
+    <article class="card">
+      <div class="card-head"><h2 class="buffer-name"></h2><span class="index"></span></div>
+      <p class="position"></p>
+      <div class="rom-label">Serijski naslov · ROM</div><code class="rom"></code>
+      <div class="reading"><div class="value"><span class="temperature">—</span><small>°C</small></div><span class="reading-state"></span></div>
+    </article>
+  </template>
+  <script src="/sensors.js" defer></script>
+</body>
+</html>
